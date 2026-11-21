@@ -1,103 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
+import LandingPage from './components/LandingPage';
+import OnboardingWizard from './components/OnboardingWizard';
 import './index.css';
 import './App.css';
-
-// ─── Placeholder Components (replaced in later phases) ──────────────────────
-
-function LandingPage({ onEnterApp }) {
-  return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: '#0B0907',
-      color: '#F5F0EB',
-      fontFamily: "'Playfair Display', Georgia, serif",
-    }}>
-      <h1 style={{ fontSize: 48, marginBottom: 8 }}>CredShield</h1>
-      <p style={{ fontSize: 18, color: '#A89E92', marginBottom: 32 }}>
-        Predict, Protect, Prevent
-      </p>
-      <button
-        onClick={() => onEnterApp('wizard')}
-        style={{
-          padding: '12px 32px',
-          background: '#0F6F5C',
-          color: '#F5F0EB',
-          border: 'none',
-          borderRadius: 8,
-          fontSize: 16,
-          fontWeight: 600,
-          cursor: 'pointer',
-        }}
-      >
-        Get Started
-      </button>
-      <button
-        onClick={() => onEnterApp('dashboard')}
-        style={{
-          marginTop: 12,
-          padding: '10px 24px',
-          background: 'transparent',
-          color: '#A89E92',
-          border: '1px solid #A89E92',
-          borderRadius: 8,
-          fontSize: 14,
-          cursor: 'pointer',
-        }}
-      >
-        Enter Dashboard
-      </button>
-    </div>
-  );
-}
-
-function OnboardingWizard({ onComplete, onSkip, onBack }) {
-  return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: '#F5F0EB',
-      fontFamily: "'Inter', system-ui, sans-serif",
-    }}>
-      <div style={{
-        background: '#FFFFFF',
-        border: '1px solid #1A1612',
-        borderRadius: 16,
-        padding: 40,
-        maxWidth: 480,
-        width: '100%',
-        textAlign: 'center',
-      }}>
-        <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 24, marginBottom: 8 }}>
-          Onboarding Wizard
-        </h2>
-        <p style={{ color: '#6B635A', marginBottom: 24 }}>
-          This will be the full onboarding flow in Phase 9.
-        </p>
-        <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-          <button onClick={onBack} style={{ padding: '8px 20px', border: '1px solid #1A1612', borderRadius: 8, background: 'transparent', cursor: 'pointer' }}>
-            Back
-          </button>
-          <button onClick={onSkip} style={{ padding: '8px 20px', border: '1px solid #A89E92', borderRadius: 8, background: 'transparent', color: '#6B635A', cursor: 'pointer' }}>
-            Skip
-          </button>
-          <button onClick={() => onComplete(null)} style={{ padding: '8px 20px', background: '#0F6F5C', color: '#F5F0EB', border: 'none', borderRadius: 8, cursor: 'pointer' }}>
-            Continue
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// App is imported from ./App.jsx
 
 // ─── Stage Controller ────────────────────────────────────────────────────────
 
