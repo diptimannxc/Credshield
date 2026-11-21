@@ -120,12 +120,13 @@ export default function Sidebar({
       {/* Logo Area */}
       <div
         style={{
-          padding: '20px 16px',
+          padding: '0 16px',
           display: 'flex',
           alignItems: 'center',
           gap: 10,
           borderBottom: `1px solid ${COLORS.border}`,
-          minHeight: 64,
+          height: 64,
+          boxSizing: 'border-box',
         }}
       >
         <Shield size={24} color={COLORS.accent} strokeWidth={2.5} />
