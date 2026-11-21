@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
+import App from './App';
 import './index.css';
 import './App.css';
 
@@ -96,35 +97,7 @@ function OnboardingWizard({ onComplete, onSkip, onBack }) {
   );
 }
 
-function App({ initialPage = 'dashboard', initialBuyerName = null, onGoToLanding = null }) {
-  return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: '#F5F0EB',
-      fontFamily: "'Inter', system-ui, sans-serif",
-    }}>
-      <div style={{ textAlign: 'center' }}>
-        <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 32, marginBottom: 8 }}>
-          CredShield Dashboard
-        </h1>
-        <p style={{ color: '#6B635A', marginBottom: 24 }}>
-          Current page: <strong>{initialPage}</strong>
-        </p>
-        <p style={{ color: '#A89E92', marginBottom: 24 }}>
-          The full app shell with sidebar, header, and views will be built in Phase 3.
-        </p>
-        {onGoToLanding && (
-          <button onClick={onGoToLanding} style={{ padding: '8px 20px', border: '1px solid #1A1612', borderRadius: 8, background: 'transparent', cursor: 'pointer' }}>
-            Back to Landing
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
+// App is imported from ./App.jsx
 
 // ─── Stage Controller ────────────────────────────────────────────────────────
 
