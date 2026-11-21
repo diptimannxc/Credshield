@@ -5,6 +5,10 @@ import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import LoadingOverlay from './components/Loadingoverlay';
 import DashboardView from './components/DashboardView';
+import CustomersView from './components/CustomersView';
+import InvoicesView from './components/InvoicesView';
+import RiskAnalysisView from './components/RiskAnalysisView';
+import ReportsView from './components/ReportsView';
 
 const API_BASE = 'http://localhost:3000/api';
 
@@ -350,39 +354,55 @@ export default function App({ initialPage = 'dashboard', initialBuyerName = null
       case 'invoices':
         return (
           <div style={pageStyle}>
-            <div style={placeholderStyle}>
-              <h2 style={{ fontSize: 24, fontWeight: 600, color: COLORS.ink }}>Invoices</h2>
-              <p>Invoice table, filters, CSV upload — coming in Phase 6</p>
-              <p style={{ fontSize: 13, color: COLORS.inkMuted }}>{invoices.length} invoices</p>
-            </div>
+            <InvoicesView
+              invoices={invoices}
+              customers={customers}
+              onAddInvoice={handleAddInvoice}
+              onMarkPaid={handleMarkInvoicePaid}
+              onDeleteInvoice={handleDeleteInvoice}
+              onFileUpload={handleFileUpload}
+              isLoading={loading}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              onSelectCustomer={handleSelectCustomer}
+            />
           </div>
         );
       case 'customers':
         return (
           <div style={pageStyle}>
-            <div style={placeholderStyle}>
-              <h2 style={{ fontSize: 24, fontWeight: 600, color: COLORS.ink }}>Buyer Portfolio</h2>
-              <p>Buyer table, detail drawer, add/delete — coming in Phase 5</p>
-              <p style={{ fontSize: 13, color: COLORS.inkMuted }}>{customers.length} buyers</p>
-            </div>
+            <CustomersView
+              customers={customers}
+              invoices={invoices}
+              onAddCustomer={handleAddCustomer}
+              onUpdateNotes={handleUpdateNotes}
+              onDeleteCustomer={handleDeleteCustomer}
+              isLoading={loading}
+              selectedCustomerName={selectedCustomerName}
+              setSelectedCustomerName={setSelectedCustomerName}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              onSelectInvoice={handleSelectInvoice}
+            />
           </div>
         );
       case 'risk_analysis':
         return (
           <div style={pageStyle}>
-            <div style={placeholderStyle}>
-              <h2 style={{ fontSize: 24, fontWeight: 600, color: COLORS.ink }}>Risk Analysis</h2>
-              <p>What-if simulator, sliders, live predictions — coming in Phase 7</p>
-            </div>
+            <RiskAnalysisView
+              customers={customers}
+              invoices={invoices}
+              initialBuyerName={initialBuyerName}
+            />
           </div>
         );
       case 'reports':
         return (
           <div style={pageStyle}>
-            <div style={placeholderStyle}>
-              <h2 style={{ fontSize: 24, fontWeight: 600, color: COLORS.ink }}>Reports</h2>
-              <p>Executive risk report, metrics, print — coming in Phase 8</p>
-            </div>
+            <ReportsView
+              customers={customers}
+              invoices={invoices}
+            />
           </div>
         );
       default:
