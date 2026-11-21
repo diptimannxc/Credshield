@@ -168,16 +168,16 @@ export default function LandingPage({ onEnterApp }) {
       {/* Hero */}
       <div ref={heroRef} style={{ position: 'relative', zIndex: 10, textAlign: 'center', maxWidth: 700, padding: '0 24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 20 }}>
-          <Shield size={36} color="#0F6F5C" strokeWidth={2.5} />
-          <span style={{ ...FONT_DISPLAY, fontSize: 16, fontWeight: 600, color: '#A89E92', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          <Shield size={36} color="#2DD4A8" strokeWidth={2.5} />
+          <span style={{ ...FONT_DISPLAY, fontSize: 16, fontWeight: 600, color: '#D4CBC0', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
             CredShield
           </span>
         </div>
-        <h1 style={{ ...FONT_DISPLAY, fontSize: 56, fontWeight: 800, lineHeight: 1.1, marginBottom: 16 }}>
+        <h1 style={{ ...FONT_DISPLAY, fontSize: 56, fontWeight: 800, lineHeight: 1.1, marginBottom: 16, color: '#FFFFFF' }}>
           Predict, Protect,<br />
-          <span style={{ color: '#0F6F5C' }}>Prevent</span>
+          <span style={{ color: '#2DD4A8' }}>Prevent</span>
         </h1>
-        <p style={{ fontSize: 18, color: '#A89E92', lineHeight: 1.6, marginBottom: 40 }}>
+        <p style={{ fontSize: 18, color: '#D4CBC0', lineHeight: 1.6, marginBottom: 40 }}>
           AI-powered credit risk intelligence for MSMEs.<br />
           Know which buyers will pay late — before they do.
         </p>
@@ -189,24 +189,24 @@ export default function LandingPage({ onEnterApp }) {
           onClick={() => onEnterApp('wizard')}
           style={{
             display: 'flex', alignItems: 'center', gap: 8,
-            padding: '14px 32px', background: '#0F6F5C', color: '#F5F0EB',
-            border: 'none', borderRadius: 12, fontSize: 16, fontWeight: 600,
+            padding: '14px 32px', background: '#2DD4A8', color: '#0B0907',
+            border: 'none', borderRadius: 12, fontSize: 16, fontWeight: 700,
             cursor: 'pointer', transition: 'transform 0.2s, background 0.2s',
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.background = '#0d5e4d'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.background = '#0F6F5C'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.background = '#5EECC5'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.background = '#2DD4A8'; }}
         >
           Get Started <ArrowRight size={18} />
         </button>
         <button
           onClick={() => onEnterApp('dashboard')}
           style={{
-            padding: '14px 28px', background: 'transparent', color: '#A89E92',
-            border: '1px solid #A89E92', borderRadius: 12, fontSize: 15,
-            cursor: 'pointer', transition: 'transform 0.2s, border-color 0.2s, color 0.2s',
+            padding: '14px 28px', background: 'transparent', color: '#FFFFFF',
+            border: '2px solid #FFFFFF', borderRadius: 12, fontSize: 15, fontWeight: 600,
+            cursor: 'pointer', transition: 'transform 0.2s, border-color 0.2s, background 0.2s',
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.borderColor = '#F5F0EB'; e.currentTarget.style.color = '#F5F0EB'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.borderColor = '#A89E92'; e.currentTarget.style.color = '#A89E92'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.background = 'transparent'; }}
         >
           Enter Dashboard
         </button>
@@ -229,11 +229,11 @@ export default function LandingPage({ onEnterApp }) {
               onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(15, 111, 92, 0.3)'; e.currentTarget.style.background = 'rgba(15, 111, 92, 0.05)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(245, 240, 235, 0.08)'; e.currentTarget.style.background = 'rgba(245, 240, 235, 0.03)'; }}
             >
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(15, 111, 92, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
-                <Icon size={22} color="#0F6F5C" />
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(45, 212, 168, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                <Icon size={22} color="#2DD4A8" />
               </div>
-              <h3 style={{ ...FONT_DISPLAY, fontSize: 18, fontWeight: 700, marginBottom: 6 }}>{f.title}</h3>
-              <p style={{ fontSize: 13, color: '#A89E92', lineHeight: 1.5 }}>{f.desc}</p>
+              <h3 style={{ ...FONT_DISPLAY, fontSize: 18, fontWeight: 700, marginBottom: 6, color: '#FFFFFF' }}>{f.title}</h3>
+              <p style={{ fontSize: 13, color: '#D4CBC0', lineHeight: 1.5 }}>{f.desc}</p>
             </div>
           );
         })}
