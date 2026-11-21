@@ -4,6 +4,7 @@ import { COLORS } from './components/ui';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import LoadingOverlay from './components/Loadingoverlay';
+import DashboardView from './components/DashboardView';
 
 const API_BASE = 'http://localhost:3000/api';
 
@@ -337,13 +338,13 @@ export default function App({ initialPage = 'dashboard', initialBuyerName = null
       case 'dashboard':
         return (
           <div style={pageStyle}>
-            <div style={placeholderStyle}>
-              <h2 style={{ fontSize: 24, fontWeight: 600, color: COLORS.ink }}>Dashboard</h2>
-              <p>KPI cards, cashflow charts, risk alerts — coming in Phase 4</p>
-              <p style={{ fontSize: 13, color: COLORS.inkMuted }}>
-                {customers.length} buyers · {invoices.length} invoices loaded
-              </p>
-            </div>
+            <DashboardView
+              customers={customers}
+              invoices={invoices}
+              recommendations={recommendations}
+              onSelectCustomer={handleSelectCustomer}
+              onExecuteRecommendation={handleExecuteRecommendation}
+            />
           </div>
         );
       case 'invoices':
