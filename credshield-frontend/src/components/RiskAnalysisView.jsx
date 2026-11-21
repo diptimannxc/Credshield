@@ -170,9 +170,9 @@ export default function RiskAnalysisView({ customers, invoices, initialBuyerName
                 <RotateCcw size={12} /> Reset
               </button>
             </div>
-            <CustomSlider label="Credit Score" value={simScore} min={300} max={1000} step={10} tooltip="Higher score = higher risk. 300 is safest, 1000 is critical." onChange={setSimScore} />
+            <CustomSlider label="Risk Score" value={simScore} min={300} max={1000} step={10} tooltip="Higher score = higher risk. 300 is safest, 1000 is critical." onChange={setSimScore} />
             <CustomSlider label="Average Delay" value={simDelay} min={0} max={120} step={1} unit="days" tooltip="Average number of days this buyer pays past the due date." onChange={setSimDelay} />
-            <CustomSlider label="Credit Exposure" value={simExposure} min={0} max={2000000} step={10000} unit="₹" tooltip="Total unpaid amount this buyer currently owes you." onChange={setSimExposure} />
+            <CustomSlider label="Risk Exposure" value={simExposure} min={0} max={2000000} step={10000} unit="₹" tooltip="Total unpaid amount this buyer currently owes you." onChange={setSimExposure} />
           </Card>
         </FadeIn>
 
@@ -180,13 +180,15 @@ export default function RiskAnalysisView({ customers, invoices, initialBuyerName
         <FadeIn delay={0.15}>
           <Card style={{ padding: 24, textAlign: 'center' }}>
             <h3 style={{ ...TYPE.sectionTitle, marginBottom: 16 }}>Prediction</h3>
-            <DelayGauge probability={probPct} />
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 20 }}>
-              <div style={{ padding: 14, background: COLORS.bg, borderRadius: 10 }}>
-                <p style={{ ...TYPE.caption, color: COLORS.inkSoft, fontWeight: 600, marginBottom: 4 }}>Predicted Delay</p>
-                <p style={{ ...FONT_MONO, fontSize: 18, fontWeight: 700, color: COLORS.ink }}>{formatDays(predDays)}</p>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24 }}>
+              <DelayGauge probability={probPct} />
+              <div style={{ padding: 18, background: COLORS.bg, borderRadius: 10, minWidth: 120 }}>
+                <p style={{ ...TYPE.caption, color: COLORS.inkSoft, fontWeight: 600, marginBottom: 6 }}>Predicted Delay</p>
+                <p style={{ ...FONT_MONO, fontSize: 22, fontWeight: 700, color: COLORS.ink }}>{formatDays(predDays)}</p>
               </div>
-              <div style={{ padding: 14, background: COLORS.bg, borderRadius: 10 }}>
+            </div>
+            <div style={{ marginTop: 20 }}>
+              <div style={{ padding: 14, background: COLORS.bg, borderRadius: 10, display: 'inline-block', minWidth: 140 }}>
                 <p style={{ ...TYPE.caption, color: COLORS.inkSoft, fontWeight: 600, marginBottom: 4 }}>Risk Level</p>
                 <RiskTierBadge tier={simRiskLevel} />
               </div>
