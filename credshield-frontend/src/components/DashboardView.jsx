@@ -17,14 +17,14 @@ import {
 
 function MetricCard({ label, value, prefix = '', suffix = '', decimals = 0, caption, color }) {
   return (
-    <Card style={{ padding: 24 }}>
+    <Card style={{ padding: 24, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: 120 }}>
       <p style={{ ...TYPE.kpiLabel, color: COLORS.inkSoft, marginBottom: 8 }}>{label}</p>
       <div style={{ ...TYPE.kpiNumber, color: color || COLORS.ink }}>
         <AnimatedCounter value={value} prefix={prefix} suffix={suffix} decimals={decimals} />
       </div>
-      {caption && (
-        <p style={{ ...TYPE.caption, color: COLORS.inkMuted, marginTop: 6 }}>{caption}</p>
-      )}
+      <p style={{ ...TYPE.caption, color: COLORS.inkMuted, marginTop: 6, minHeight: 16 }}>
+        {caption || '\u00A0'}
+      </p>
     </Card>
   );
 }
@@ -291,12 +291,8 @@ export default function DashboardView({
   return (
     <div>
       {/* ── KPI Cards ── */}
-      <Stagger
-        gap={0.06}
-        className=""
-        style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}
-      >
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
+      <FadeIn>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24, alignItems: 'stretch' }}>
           <MetricCard
             label="Active Invoices"
             value={activeInvoices}
@@ -323,7 +319,7 @@ export default function DashboardView({
             caption={atRiskAmount > 0 ? `${overdueCount} overdue invoices` : 'No critical risk'}
           />
         </div>
-      </Stagger>
+      </FadeIn>
 
       {/* ── Cashflow Section ── */}
       <FadeIn delay={0.2}>
