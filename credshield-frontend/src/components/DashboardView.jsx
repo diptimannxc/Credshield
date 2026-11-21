@@ -75,91 +75,120 @@ function RiskRing({ percentage, size = 48 }) {
   );
 }
 
-// ─── CashflowChart (CSS bar chart) ──────────────────────────────────────────
+// ─── CashflowChart (CSS bar chart with Y-axis) ─────────────────────────────
 
-function CashflowChart({ invoices }) {
-  const [animated, setAnimated] = useState(false);
+function buildMonthlySeries(invoices, monthsCount) {
+  const now = new Date();
+  const buckets = [];
+  for (let i = monthsCount - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    buckets.push({
+      key: `${d.getFullYear()}-${d.getMonth()}`,
+      label: d.toLocaleDateString('en-US', { month: 'short' }),
+      projected: 0,
+      actual: 0,
+    });
+  }
+  invoices.forEach((inv) => {
+    const dueStr = inv.dueDate || inv.due_date || '';
+    const d = new Date(dueStr);
+    if (isNaN(d.getTime())) return;
+    const key = `${d.getFullYear()}-${d.getMonth()}`;
+    const bucket = buckets.find((b) => b.key === key);
+    if (!bucket) return;
+    bucket.projected += Number(inv.amount);
+    if (inv.status === 'Paid') bucket.actual += Number(inv.amount);
+  });
+  return buckets;
+}
+
+function CashflowChart({ invoices, monthsCount = 6 }) {
+  const series = buildMonthlySeries(invoices, monthsCount);
+  const maxVal = Math.max(1, ...series.map((b) => Math.max(b.projected, b.actual)));
+  const hasData = series.some((b) => b.projected > 0);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setAnimated(true), 200);
-    return () => clearTimeout(timer);
+    const id = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(id);
   }, []);
 
-  // Bucket invoices by month (last 6 months)
-  const months = useMemo(() => {
-    const now = new Date();
-    const buckets = [];
-    for (let i = 5; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-      const label = d.toLocaleDateString('en-IN', { month: 'short' });
-      buckets.push({ key, label, projected: 0, collected: 0 });
-    }
+  const formatAmount = (v) => {
+    if (v >= 10000000) return `₹${(v / 10000000).toFixed(1)}Cr`;
+    if (v >= 100000) return `₹${(v / 100000).toFixed(1)}L`;
+    if (v >= 1000) return `₹${(v / 1000).toFixed(0)}K`;
+    return `₹${v}`;
+  };
 
-    invoices.forEach((inv) => {
-      const dueStr = inv.dueDate || inv.due_date || '';
-      const due = new Date(dueStr);
-      if (isNaN(due)) return;
-      const key = `${due.getFullYear()}-${String(due.getMonth() + 1).padStart(2, '0')}`;
-      const bucket = buckets.find((b) => b.key === key);
-      if (bucket) {
-        bucket.projected += Number(inv.amount);
-        if (inv.status === 'Paid') {
-          bucket.collected += Number(inv.amount);
-        }
-      }
-    });
+  if (!hasData) {
+    return (
+      <div style={{ height: 160, display: 'flex', alignItems: 'center', justifyContent: 'center', color: COLORS.inkMuted, fontSize: 12 }}>
+        No invoices due in this range yet.
+      </div>
+    );
+  }
 
-    return buckets;
-  }, [invoices]);
-
-  const maxAmount = Math.max(...months.map((m) => Math.max(m.projected, m.collected)), 1);
+  const ticks = [1, 0.75, 0.5, 0.25, 0];
 
   return (
     <div>
       <h3 style={{ ...TYPE.sectionTitle, marginBottom: 16 }}>Cashflow Trend</h3>
-      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16, height: 160, paddingBottom: 24 }}>
-        {months.map((month) => {
-          const projH = (month.projected / maxAmount) * 120;
-          const collH = (month.collected / maxAmount) * 120;
-          return (
-            <div key={month.key} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 3, height: 120 }}>
-                <div
-                  style={{
-                    width: 18,
-                    height: animated ? projH : 0,
-                    background: `${COLORS.accent}22`,
-                    border: `1px solid ${COLORS.accent}44`,
-                    borderRadius: '4px 4px 0 0',
-                    transition: `height 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)`,
-                  }}
-                  title={`Projected: ₹${month.projected.toLocaleString('en-IN')}`}
-                />
-                <div
-                  style={{
-                    width: 18,
-                    height: animated ? collH : 0,
-                    background: month.collected >= month.projected ? COLORS.low : COLORS.medium,
-                    borderRadius: '4px 4px 0 0',
-                    transition: `height 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s`,
-                  }}
-                  title={`Collected: ₹${month.collected.toLocaleString('en-IN')}`}
-                />
-              </div>
-              <span style={{ ...TYPE.caption, color: COLORS.inkMuted }}>{month.label}</span>
+      <div style={{ display: 'flex', height: 160 }}>
+        {/* Y-axis labels */}
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: 52, paddingRight: 8, flexShrink: 0 }}>
+          {ticks.map((t) => (
+            <span key={t} style={{ ...FONT_MONO, fontSize: 10, fontWeight: 500, color: COLORS.inkSoft, textAlign: 'right', lineHeight: 1 }}>
+              {formatAmount(Math.round(maxVal * t))}
+            </span>
+          ))}
+        </div>
+        {/* Bars */}
+        <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', gap: 8, borderLeft: `1px solid ${COLORS.border}` }}>
+          {series.map((b, idx) => (
+            <div key={b.key} style={{ flex: 1, height: '100%', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 3 }}>
+              <div
+                title={`Projected: ₹${b.projected.toLocaleString('en-IN')}`}
+                style={{
+                  flex: 1,
+                  height: mounted ? `${(b.projected / maxVal) * 100}%` : '0%',
+                  background: `${COLORS.accent}22`,
+                  borderRadius: '4px 4px 0 0',
+                  minHeight: b.projected > 0 && mounted ? 3 : 0,
+                  transition: `height 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) ${idx * 0.08}s`,
+                }}
+              />
+              <div
+                title={`Collected: ₹${b.actual.toLocaleString('en-IN')}`}
+                style={{
+                  flex: 1,
+                  height: mounted ? `${(b.actual / maxVal) * 100}%` : '0%',
+                  background: b.actual < b.projected ? COLORS.medium : COLORS.low,
+                  borderRadius: '4px 4px 0 0',
+                  minHeight: b.actual > 0 && mounted ? 3 : 0,
+                  transition: `height 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) ${idx * 0.08 + 0.1}s`,
+                }}
+              />
             </div>
-          );
-        })}
+          ))}
+        </div>
       </div>
+      {/* X-axis month labels */}
+      <div style={{ display: 'flex', gap: 8, marginTop: 8, paddingTop: 8, borderTop: `1px solid ${COLORS.border}`, marginLeft: 60 }}>
+        {series.map((b) => (
+          <span key={b.key} style={{ flex: 1, textAlign: 'center', ...FONT_MONO, fontSize: 9, fontWeight: 500, color: COLORS.inkSoft }}>
+            {b.label.toUpperCase()}
+          </span>
+        ))}
+      </div>
+      {/* Legend */}
       <div style={{ display: 'flex', gap: 16, marginTop: 8 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <div style={{ width: 12, height: 12, background: `${COLORS.accent}22`, border: `1px solid ${COLORS.accent}44`, borderRadius: 2 }} />
-          <span style={{ ...TYPE.caption, color: COLORS.inkSoft }}>Projected</span>
+          <div style={{ width: 8, height: 8, borderRadius: '50%', background: `${COLORS.accent}55` }} />
+          <span style={{ fontSize: 9, fontWeight: 500, color: COLORS.inkSoft }}>Projected</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <div style={{ width: 12, height: 12, background: COLORS.low, borderRadius: 2 }} />
-          <span style={{ ...TYPE.caption, color: COLORS.inkSoft }}>Collected</span>
+          <div style={{ width: 8, height: 8, borderRadius: '50%', background: COLORS.low }} />
+          <span style={{ fontSize: 9, fontWeight: 500, color: COLORS.inkSoft }}>Collected</span>
         </div>
       </div>
     </div>
@@ -168,71 +197,102 @@ function CashflowChart({ invoices }) {
 
 // ─── CashflowHeatmap (GitHub-style activity grid) ────────────────────────────
 
+function buildHeatmapCells(invoices, weeks = 9) {
+  const totalDays = weeks * 7;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const cells = [];
+  for (let i = totalDays - 1; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    cells.push({ date: d, amount: 0 });
+  }
+
+  const keyOf = (d) => d.toISOString().slice(0, 10);
+  const byDate = new Map(cells.map((c) => [keyOf(c.date), c]));
+
+  invoices.forEach((inv) => {
+    const dueStr = inv.dueDate || inv.due_date || '';
+    const d = new Date(dueStr);
+    if (isNaN(d.getTime())) return;
+    d.setHours(0, 0, 0, 0);
+    const cell = byDate.get(keyOf(d));
+    if (cell) cell.amount += Number(inv.amount);
+  });
+
+  return cells;
+}
+
 function CashflowHeatmap({ invoices }) {
-  const [warmth, setWarmth] = useState(0);
+  const weeks = 9;
+  const cells = buildHeatmapCells(invoices, weeks);
+  const maxAmt = Math.max(1, ...cells.map((c) => c.amount));
+  const hasData = cells.some((c) => c.amount > 0);
+  const [heatLevel, setHeatLevel] = useState(0);
 
   useEffect(() => {
-    const start = performance.now();
+    if (!hasData) return;
+    let start = null;
+    const delay = 800;
     const duration = 2800;
-    const animate = (now) => {
-      const progress = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
-      setWarmth(eased);
-      if (progress < 1) requestAnimationFrame(animate);
+    let rafId;
+    const step = (ts) => {
+      if (!start) start = ts;
+      const elapsed = ts - start;
+      if (elapsed < delay) { rafId = requestAnimationFrame(step); return; }
+      const progress = Math.min((elapsed - delay) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setHeatLevel(eased);
+      if (progress < 1) rafId = requestAnimationFrame(step);
     };
-    requestAnimationFrame(animate);
-  }, []);
+    rafId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(rafId);
+  }, [hasData]);
 
-  // Build 63-day grid (9 cols × 7 rows)
-  const grid = useMemo(() => {
-    const days = [];
-    const now = new Date();
-    for (let i = 62; i >= 0; i--) {
-      const d = new Date(now);
-      d.setDate(d.getDate() - i);
-      const dateStr = d.toISOString().split('T')[0];
-      let amount = 0;
-      invoices.forEach((inv) => {
-        const dueStr = inv.dueDate || inv.due_date || '';
-        // Try to match by normalizing
-        const due = new Date(dueStr);
-        if (!isNaN(due) && due.toISOString().split('T')[0] === dateStr) {
-          amount += Number(inv.amount);
-        }
-      });
-      days.push({ date: dateStr, amount });
-    }
-    return days;
-  }, [invoices]);
-
-  const maxAmount = Math.max(...grid.map((d) => d.amount), 1);
+  if (!hasData) {
+    return (
+      <div style={{ height: 160, display: 'flex', alignItems: 'center', justifyContent: 'center', color: COLORS.inkMuted, fontSize: 12, textAlign: 'center', padding: '0 16px' }}>
+        No due dates in range yet to visualize daily activity.
+      </div>
+    );
+  }
 
   return (
     <div>
       <h4 style={{ ...TYPE.caption, color: COLORS.inkSoft, fontWeight: 600, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-        Invoice Activity (63 days)
+        Invoice Activity ({weeks * 7} days)
       </h4>
       <div
         style={{
           display: 'grid',
+          gridTemplateColumns: `repeat(${weeks}, 1fr)`,
           gridTemplateRows: 'repeat(7, 1fr)',
           gridAutoFlow: 'column',
-          gridAutoColumns: '1fr',
           gap: 3,
         }}
       >
-        {grid.map((day, i) => {
-          const intensity = day.amount > 0 ? Math.max(0.15, (day.amount / maxAmount)) : 0;
-          const alpha = Math.round(intensity * warmth * 255).toString(16).padStart(2, '0');
+        {cells.map((c, i) => {
+          const intensity = c.amount / maxAmt;
+          const scaledAlpha = c.amount > 0
+            ? Math.round((28 + intensity * 68) * heatLevel)
+            : 0;
+          const alphaHex = scaledAlpha.toString(16).padStart(2, '0');
+          const borderAlpha = c.amount > 0
+            ? Math.round(0x30 * heatLevel).toString(16).padStart(2, '0')
+            : null;
           return (
             <div
               key={i}
-              title={`${day.date}: ₹${day.amount.toLocaleString('en-IN')}`}
+              title={`${c.date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}: ₹${c.amount.toLocaleString('en-IN')}`}
               style={{
                 width: '100%',
                 aspectRatio: '1',
                 borderRadius: 3,
-                background: day.amount > 0 ? `${COLORS.accent}${alpha}` : `${COLORS.inkMuted}10`,
+                background: c.amount > 0
+                  ? `${COLORS.accent}${alphaHex}`
+                  : COLORS.bg,
+                border: `1px solid ${c.amount > 0 && borderAlpha ? `${COLORS.accent}${borderAlpha}` : COLORS.border}`,
                 minWidth: 10,
                 minHeight: 10,
               }}
@@ -240,6 +300,9 @@ function CashflowHeatmap({ invoices }) {
           );
         })}
       </div>
+      <p style={{ fontSize: 9, color: COLORS.inkSoft, marginTop: 10 }}>
+        Daily invoice due-amounts, last {weeks} weeks — darker = higher volume
+      </p>
     </div>
   );
 }
