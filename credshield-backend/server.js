@@ -5,7 +5,7 @@ const { parse } = require('csv-parse/sync');
 const db = require('./db');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
@@ -16,7 +16,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 async function getPrediction(score, avgDelay, exposure) {
   try {
-    const response = await fetch('http://localhost:5000/predict', {
+    const response = await fetch(`${process.env.ML_SERVICE_URL || 'http://localhost:5000'}/predict`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ score, avg_delay: avgDelay, exposure }),

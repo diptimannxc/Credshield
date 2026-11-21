@@ -3,7 +3,7 @@ import { ChevronDown, RotateCcw } from 'lucide-react';
 import { COLORS, FONT_DISPLAY, FONT_MONO, TYPE, Card, FadeIn, RiskTierBadge, RISK_TIER_COLOR } from './ui';
 import InfoTooltip from './InfoTooltip';
 
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
 
 function DelayGauge({ probability, size = 160 }) {
   const [animOffset, setAnimOffset] = useState(301.59);

@@ -10,7 +10,7 @@ import InvoicesView from './components/InvoicesView';
 import RiskAnalysisView from './components/RiskAnalysisView';
 import ReportsView from './components/ReportsView';
 
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
 
 const PAGE_LABELS = {
   dashboard: 'Loading Dashboard',
