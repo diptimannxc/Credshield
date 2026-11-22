@@ -136,6 +136,12 @@ function ClickRevealSection() {
           scrub: 0.7,
           pin: true,
           anticipatePin: 1,
+          onUpdate: (self) => {
+            document.body.setAttribute('data-nav-theme', self.progress > 0.15 ? 'light' : 'dark');
+          },
+          onLeaveBack: () => {
+            document.body.setAttribute('data-nav-theme', 'dark');
+          },
         },
       });
 
@@ -196,6 +202,12 @@ function NavBar({ onEnterApp }) {
 }
 
 export default function LandingPage({ onEnterApp }) {
+  // Set navbar to dark theme initially (dark landing section)
+  useLayoutEffect(() => {
+    document.body.setAttribute('data-nav-theme', 'dark');
+    return () => document.body.removeAttribute('data-nav-theme');
+  }, []);
+
   return (
     <div style={{ background: C.dark, overflowX: 'hidden' }}>
       <NavBar onEnterApp={onEnterApp} />
